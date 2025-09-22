@@ -8,14 +8,15 @@ import { ImagenService } from 'src/app/services/imagen.service';
 })
 export class BuscarImagenComponent implements OnInit {
   imagenBuscada:string='';
-  constructor(private _serviceError:ImagenService) { }
+  constructor(private _serviceImagen:ImagenService) { }
 
   ngOnInit(): void {
   }
   buscarImagenes(){
     if(this.imagenBuscada===''){
-      this._serviceError.setError('Error no debe ser vacio');
+      this._serviceImagen.setError('Error no debe ser vacio');
+      return;
     }
-    
+    this._serviceImagen.enviarTerminoBusqueda(this.imagenBuscada)
   }
 }
