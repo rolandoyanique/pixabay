@@ -10,13 +10,24 @@ import { Subscription } from 'rxjs';
 export class ListarImagenComponent implements OnInit {
   termino='';
   suscripcion:Subscription;
+  listImagenes:any[]=[];
   constructor(private _imagenService:ImagenService) { 
     this.suscripcion=this._imagenService.getTerminoBusqueda().subscribe(data=>{
-      console.log(data);
+      this.termino=data;
+      this.obtenerImagenes();
     })
   }
 
   ngOnInit(): void {
   }
-
+  obtenerImagenes(){
+    this._imagenService.getImagenes(this.termino).subscribe(data=>{
+      if(data.hits.length===0){
+        this._imagenService.setError('Obs... no hay resultados');
+        return;
+      }
+      this.listImagenes=data.hits;
+      console.log(this.listImagenes);
+    })
+  }
 }
