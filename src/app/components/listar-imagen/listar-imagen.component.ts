@@ -12,9 +12,13 @@ export class ListarImagenComponent implements OnInit {
   suscripcion:Subscription;
   listImagenes:any[]=[];
   loading:boolean=false;
+  imagenesPorPagina = 30;
+  paginaActual=1;
+  calcularTotalPaginas=0;
   constructor(private _imagenService:ImagenService) { 
     this.suscripcion=this._imagenService.getTerminoBusqueda().subscribe(data=>{
       this.termino=data;
+      this.paginaActual=1;
       this.obtenerImagenes();
     })
   }
@@ -23,17 +27,33 @@ export class ListarImagenComponent implements OnInit {
   }
   obtenerImagenes(){
     this.loading=true;
-    this._imagenService.getImagenes(this.termino).subscribe(data=>{
+    this._imagenService.getImagenes(this.termino,this.imagenesPorPagina,this.paginaActual).subscribe(data=>{
       if(data.hits.length===0){
         this._imagenService.setError('Obs... no hay resultados');
         return;
       }
+      this.calcularTotalPaginas=Math.round(data.totalHits / this.imagenesPorPagina);
       setTimeout(()=>{
         this.loading=false;
         this.listImagenes=data.hits;
       },2000);
       
-      console.log(this.listImagenes);
     })
+  }
+  paginaAnterior(){
+    this.paginaActual--;
+    this.listImagenes=[];
+    this.obtenerImagenes();
+  }
+  paginaSiguiente(){
+    this.paginaActual++;
+    this.listImagenes=[];
+    this.obtenerImagenes();
+  }
+  paginaAnteriorClass(){
+    return this.paginaActual!=1;
+  }
+  paginaSiguenteClass(){
+    return this.paginaActual<this.calcularTotalPaginas;
   }
 }
